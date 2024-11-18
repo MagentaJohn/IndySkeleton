@@ -27,7 +27,6 @@ object SkeletonGameModel:
       sOppoName,
     )
   end creation
-
-
   scribe.debug("@@@ Object SkeletonGameModel Finish")
+  
 end SkeletonGameModel

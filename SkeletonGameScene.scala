@@ -3,13 +3,13 @@ package game
 import indigo.*
 import indigo.scenes.*
 
-object GameScene extends Scene[StartUpData, SkeletonGameModel, ViewModel]:
+object SkeletonGameScene extends Scene[StartUpData, SkeletonGameModel, ViewModel]:
 
   type SceneModel     = SkeletonGameModel
   type SceneViewModel = ViewModel
 
   val name: SceneName =
-    SceneName("game")
+    SceneName("MainScene")
 
   val modelLens: Lens[SkeletonGameModel, SkeletonGameModel] =
     Lens.keepLatest
@@ -21,7 +21,7 @@ object GameScene extends Scene[StartUpData, SkeletonGameModel, ViewModel]:
     EventFilters.Permissive
 
   val subSystems: Set[SubSystem[SkeletonGameModel]] =
-    Set()
+    Set(SSGame("SubSystemPeerJS"))
 
   def updateModel(
       context: SceneContext[StartUpData],
