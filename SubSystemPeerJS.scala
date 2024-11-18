@@ -33,7 +33,6 @@ final case class SSGame(initialMessage: String) extends SubSystem[SkeletonGameMo
   var peer: Option[Peer] = None
   var conn: Option[DataConnection] = None
   var tryToConnect : Boolean = false
-  var test1 = 0
 
   var latestUpdate: Option[SkeletonGameModel] = None
 
@@ -65,6 +64,32 @@ final case class SSGame(initialMessage: String) extends SubSystem[SkeletonGameMo
       context: SubSystemFrameContext[ReferenceData],
       message: Unit
   ): EventType => Outcome[Unit] = {
+
+    case Key_A_Event => 
+      scribe.debug("SubSystemPeerJS detects Key A") 
+      Outcome(())
+    case Key_B_Event => 
+      scribe.debug("SubSystemPeerJS detects Key B") 
+      Outcome(())
+    case Key_C_Event => 
+      scribe.debug("SubSystemPeerJS detects Key C") 
+      Outcome(())
+    case Key_D_Event => 
+      scribe.debug("SubSystemPeerJS detects Key D") 
+      Outcome(())
+    case Key_E_Event => 
+      scribe.debug("SubSystemPeerJS detects Key E") 
+      Outcome(())
+    case Key_F_Event => 
+      scribe.debug("SubSystemPeerJS detects Key F") 
+      Outcome(())
+    case Key_Enter_Event => 
+      scribe.debug("SubSystemPeerJS detects Key ENTER") 
+      Outcome(())
+    case Key_Escape_Event => 
+      scribe.debug("SubSystemPeerJS detects Key ESCAPE") 
+      Outcome(())
+
 
     case WebRtcEvent.MakePeerEntity(s0) =>
       scribe.debug(s"@@@ SubSystemPeerJS WebRtcEvent MakePeerEntity using $s0")
@@ -157,10 +182,6 @@ final case class SSGame(initialMessage: String) extends SubSystem[SkeletonGameMo
       Outcome(())
 
     case _ =>
-      test1 = test1 + 1
-      if (test1 % 300 == 0) then
-        scribe.debug("@@@ SubSystemPeerJS 300 events")
-      end if
       Outcome(())
 
 /*        

@@ -23,9 +23,13 @@ object SkeletonGameModel:
     scribe.debug("@@@ SkeletonGameModel creation")
 
     val pNo = 
-      if (name1.compareTo(name2) > 0) then 2
-      else 1 
+      if (name1.compareTo(name2) > 0) then 
+        2
+      else 
+        1 
       end if
+    scribe.debug("@@@ Name1:"+name1+ " Name2:" +name2+ "PlayerNo:" +pNo)  
+
 
     SkeletonGameModel(
       name1,
@@ -39,3 +43,5 @@ object SkeletonGameModel:
   scribe.debug("@@@ Object SkeletonGameModel Finish")
 
 end SkeletonGameModel
+
+

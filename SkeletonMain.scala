@@ -54,7 +54,7 @@ case class SkeletonGame(
     scribe.debug("@@@ SubSystem initialModel()")
 
     val n1 = startupData.skBootData.name1
-    val n2 = startupData.skBootData.name1
+    val n2 = startupData.skBootData.name2
     val skm = SkeletonGameModel.creation(n1, n2)
     Outcome(skm)
 
