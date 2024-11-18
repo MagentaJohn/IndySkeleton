@@ -41,6 +41,29 @@ object SkeletonGameScene extends Scene[StartUpData, SkeletonGameModel, ViewModel
       model: SceneModel,
       viewModel: SceneViewModel
   ): Outcome[SceneUpdateFragment] =
+
+    val box1 = Rectangle(Point(5,170), Size(300,50))
+
+    val text1 = TextBox("Status:",100,40)
+      .withColor(RGBA.Black)
+      .withFontSize(Pixels(20))
+      .moveTo(10,180)
+
+    val box2 = Rectangle(Point(5,240), Size(300,50))
+
+    val text2 = TextBox("TX:",100,40)
+      .withColor(RGBA.Black)
+      .withFontSize(Pixels(20))
+      .moveTo(10,250)      
+
+    val box3 = Rectangle(Point(5,310), Size(300,50))
+
+    val text3 = TextBox("RX:",100,40)
+      .withColor(RGBA.Black)
+      .withFontSize(Pixels(20))
+      .moveTo(10,320)
+
+
     Outcome(
       SceneUpdateFragment(
         Shape
@@ -52,4 +75,10 @@ object SkeletonGameScene extends Scene[StartUpData, SkeletonGameModel, ViewModel
           .moveTo(100, 100)
           .rotateTo(Radians.fromSeconds(context.running * 0.25))
       )
+      |+| SceneUpdateFragment(Shape.Box(box1, Fill.Color(RGBA.White)))
+      |+| SceneUpdateFragment(text1)
+      |+| SceneUpdateFragment(Shape.Box(box2, Fill.Color(RGBA.White)))
+      |+| SceneUpdateFragment(text2)
+      |+| SceneUpdateFragment(Shape.Box(box3, Fill.Color(RGBA.White)))
+      |+| SceneUpdateFragment(text3)
     )
