@@ -1,0 +1,6 @@
+.vscode
+.scala-build
+.bsp
+.metals
+*.scala.semanticdb
+.OUT
