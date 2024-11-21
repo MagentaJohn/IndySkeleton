@@ -23,6 +23,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     timeout-minutes: 60
     steps:
+      - run: echo "@@@@@-1-@@@@@"
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
