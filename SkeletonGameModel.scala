@@ -6,30 +6,26 @@ import io.circe.Decoder
 import io.circe.syntax.*
 import io.circe.parser.decode
 
-
 final case class SkeletonGameModel(
     ourName: String,
     oppoName: String,
     playerNo: Int,
     status: String,
     tx: String,
-    rx:String
+    rx: String
 ) derives Encoder.AsObject,
       Decoder
 object SkeletonGameModel:
-  scribe.debug("@@@ Object SkeletonGameModel Start")
+  // scribe.debug("@@@ Object SkeletonGameModel Start")
 
-  def creation(name1:String, name2:String): SkeletonGameModel =
-    scribe.debug("@@@ SkeletonGameModel creation")
+  def creation(name1: String, name2: String): SkeletonGameModel =
+    // scribe.debug("@@@ SkeletonGameModel creation")
 
-    val pNo = 
-      if (name1.compareTo(name2) > 0) then 
-        2
-      else 
-        1 
+    val pNo =
+      if (name1.compareTo(name2) > 0) then 2
+      else 1
       end if
-    scribe.debug("@@@ Name1:"+name1+ " Name2:" +name2+ "PlayerNo:" +pNo)  
-
+    scribe.debug("@@@ Name1:" + name1 + " Name2:" + name2 + "PlayerNo:" + pNo)
 
     SkeletonGameModel(
       name1,
@@ -40,8 +36,6 @@ object SkeletonGameModel:
       "---"
     )
   end creation
-  scribe.debug("@@@ Object SkeletonGameModel Finish")
+  // scribe.debug("@@@ Object SkeletonGameModel Finish")
 
 end SkeletonGameModel
-
-
