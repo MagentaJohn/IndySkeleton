@@ -51,7 +51,7 @@ object SkeletonGameScene extends Scene[StartUpData, SkeletonGameModel, ViewModel
       case k: KeyboardEvent.KeyDown =>
         if k.keyCode == Key.KEY_P then Outcome(model).addGlobalEvents(WebRtcEvent.MakePeerEntity)
         else if k.keyCode == Key.ENTER then Outcome(model).addGlobalEvents(WebRtcEvent.Connect(model.oppoName))
-        else if k.keyCode == Key.ESCAPE then Outcome(model).addGlobalEvents(WebRtcEvent.Close())        
+        else if k.keyCode == Key.ESCAPE then Outcome(model).addGlobalEvents(WebRtcEvent.Close())
         else
           val playerNo = model.playerNo
           val msgToSend1 = (k.keyCode) match

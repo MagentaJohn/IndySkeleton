@@ -19,7 +19,7 @@ case class SkeletonGame(
   Logger.root
     .clearHandlers()
     .withHandler(formatter = Formatter.simple)
-    .withMinimumLevel(Level.Debug)
+    .withMinimumLevel(Level.Debug)  // levels: fatal,error,warn,info,debug,trace
     .replace()
 
   def initialScene(bootData: BootData): Option[SceneName] =

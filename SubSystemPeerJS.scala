@@ -28,7 +28,6 @@ final case class SSGame(initialMessage: String) extends SubSystem[SkeletonGameMo
 
   var peer: Option[Peer] = None
   var conn: Option[DataConnection] = None
-  var tryToConnect : Boolean = false
 
   var latestDisplayInfo : Option[SkeletonUpdate.Info] = None
   
@@ -38,15 +37,15 @@ final case class SSGame(initialMessage: String) extends SubSystem[SkeletonGameMo
   type ReferenceData = SkeletonGameModel
   val id: SubSystemId = SubSystemId("SubSystemPeerJS")
 
-  //val eventFilter: GlobalEvent => Option[GlobalEvent] = {
-  //  case e: GlobalEvent => Some(e)
-  //  case null           => None
-  //}
- 
-  val eventFilter: GlobalEvent => Option[WebRtcEvent] = {
-    case e: WebRtcEvent => Some(e)
-    case _              => None
+  val eventFilter: GlobalEvent => Option[GlobalEvent] = {
+    case e: GlobalEvent => Some(e)
+    case null           => None
   }
+ 
+ //val eventFilter: GlobalEvent => Option[WebRtcEvent] = {
+ //  case e: WebRtcEvent => Some(e)
+ //  case _              => None
+ // }
 
   // Extra line here, as mandated by indigo's SubSystem.scala. Yet it is not in the examples!!!
   def reference(skeletonGameModel: SkeletonGameModel): SkeletonGameModel = 
@@ -71,7 +70,14 @@ final case class SSGame(initialMessage: String) extends SubSystem[SkeletonGameMo
         scribe.debug("@@@ peer.on open")))
       peer.foreach(_.on("connection",(c: DataConnection) => 
         latestDisplayInfo = Some(SkeletonUpdate.Info("Peer:Connection","",""))
-        scribe.debug("@@@ peer.on connection")))
+        // Section (D)
+        c.on(
+          "data",
+          (data: String) =>
+            latestDisplayInfo = Some(SkeletonUpdate.Info("Peer:Connection->Data","",data))
+            scribe.debug("@@@ peer.on connection.on data")
+        )))
+        scribe.debug("@@@ peer.on connection")
       peer.foreach(_.on("disconnected", (c: DataConnection) => 
         latestDisplayInfo = Some(SkeletonUpdate.Info("Peer:Disconnected","",""))
         scribe.debug("@@@ peer.on disconnected")))
@@ -102,20 +108,22 @@ final case class SSGame(initialMessage: String) extends SubSystem[SkeletonGameMo
           conn.foreach(_.on("disconnected", (c: DataConnection) => 
             latestDisplayInfo = Some(SkeletonUpdate.Info("Connection:Disconnected","",""))
             scribe.debug("@@@ conn.on disconnected")))
-          conn.foreach(_.on("data", (c: DataConnection) => 
+          conn.foreach(_.on("data", 
+            (c: DataConnection) => 
 
             // *************************************************************************************************
             // Simon here is my problem ....
             // If I enable (A) and disable (B) then console shows "@@@ conn.on data" on inbound string
             // If I disable (A) and enable (B) then console shows nothing on inbound string
-            // Something is wrong with section (B)
+            // Something is wrong with section (B), when I send a msg from remote it is not received
             // Section (C) just as (B) but assumes String instead of js.Object
+            // Section (D) above could also be a contributing factor
             // Please note I am testing against https://jmcker.github.io/Peer-to-Peer-Cue-System/receive.html
             // *************************************************************************************************
 
             // Section (A)
-            latestDisplayInfo = Some(SkeletonUpdate.Info("Connection:Data","","WHACKY - PLEASE FIXME"))
-            scribe.debug("@@@ conn.on data")
+            //latestDisplayInfo = Some(SkeletonUpdate.Info("Connection:Data","","WHACKY - PLEASE FIXME"))
+            //scribe.debug("@@@ conn.on data")
 
             // Section (B)
             //(data: js.Object) =>
@@ -124,11 +132,9 @@ final case class SSGame(initialMessage: String) extends SubSystem[SkeletonGameMo
             //  scribe.debug("@@@ conn.on data")
 
             // Section (C)
-            //(data: String) =>
-            //  latestDisplayInfo = Some(SkeletonUpdate.Info("Connection:Data","",data))
-            //  scribe.debug("@@@ conn.on data")
-            
-
+              (data: String) =>
+                latestDisplayInfo = Some(SkeletonUpdate.Info("Connection:Data","",data))
+                scribe.debug("@@@ conn.on data")
             )
           )
           conn.foreach(_.on("close", (c: DataConnection) => 
@@ -143,7 +149,6 @@ final case class SSGame(initialMessage: String) extends SubSystem[SkeletonGameMo
           scribe.debug("@@@ SubSystemPeerJS WebRtcEvent Connect NO PEER !!!")          
       Outcome(())
 
-
     case WebRtcEvent.SendGameData(s) =>
       scribe.debug("@@@ SubSystemPeerJS WebRtcEvent SendGameData " + s)
       conn.foreach(_.send(s))
@@ -154,11 +159,11 @@ final case class SSGame(initialMessage: String) extends SubSystem[SkeletonGameMo
       scribe.debug("@@@ SubSystemPeerJS WebRtcEvent Close")
       conn.foreach(_.close())
       Outcome(())
-  
 
     case _ =>
       latestDisplayInfo match
         case Some(info) =>
+          latestDisplayInfo = None
           Outcome(()).addGlobalEvents(info)
         case None =>
           Outcome(())
