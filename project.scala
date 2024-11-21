@@ -1,6 +1,6 @@
-//> using scala 3.5.2
+//> using scala 3.6.1
 //> using platform js
-//> using jsVersion 1.16.0
+//> using jsVersion 1.17.0
 
 //> using jsModuleKind es
 //> using jsModuleSplitStyleStr smallmodulesfor
