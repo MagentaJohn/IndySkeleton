@@ -45,6 +45,7 @@ object SkeletonGameScene
   ): GlobalEvent => Outcome[SceneModel] = {
 
     case WebRtcEvent.ReceivedData(s: String) =>
+      scribe.info("ReceivedData")
       Outcome(model.copy(status = s))
 
     case e: SkeletonUpdate.Info =>
