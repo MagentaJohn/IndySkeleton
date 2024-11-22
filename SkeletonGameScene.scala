@@ -44,9 +44,6 @@ object SkeletonGameScene
       model: SceneModel
   ): GlobalEvent => Outcome[SceneModel] = {
 
-    case WebRtcEvent.ReceivedData(s: String) =>
-      scribe.info("@@@ SkeletonGameScene WebRtcEvent.ReceivedData")
-      Outcome(model.copy(rx = s))
 
     case e: SkeletonUpdate.Info =>
       val newStatus = if (e.st.isEmpty()) then model.status else e.st
@@ -73,10 +70,10 @@ object SkeletonGameScene
           case _         => ""
         if (msgToSend1.isEmpty() == false) then
           if (playerNo == 1) then
-            Outcome(model).addGlobalEvents(WebRtcEvent.SendGameData(msgToSend1))
+            Outcome(model).addGlobalEvents(WebRtcEvent.SendData(msgToSend1))
           else
             val msgToSend2 = msgToSend1.toLowerCase()
-            Outcome(model).addGlobalEvents(WebRtcEvent.SendGameData(msgToSend2))
+            Outcome(model).addGlobalEvents(WebRtcEvent.SendData(msgToSend2))
           end if
         else 
           Outcome(model)
