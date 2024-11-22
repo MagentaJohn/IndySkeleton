@@ -45,8 +45,8 @@ object SkeletonGameScene
   ): GlobalEvent => Outcome[SceneModel] = {
 
     case WebRtcEvent.ReceivedData(s: String) =>
-      scribe.info("ReceivedData")
-      Outcome(model.copy(status = s))
+      scribe.info("@@@ SkeletonGameScene WebRtcEvent.ReceivedData")
+      Outcome(model.copy(rx = s))
 
     case e: SkeletonUpdate.Info =>
       val newStatus = if (e.st.isEmpty()) then model.status else e.st
@@ -56,7 +56,6 @@ object SkeletonGameScene
 
     case k: KeyboardEvent.KeyDown =>
       if k.keyCode == Key.KEY_P then
-        println("Key P")
         Outcome(model).addGlobalEvents(WebRtcEvent.MakePeerEntity)
       else if k.keyCode == Key.ENTER then
         Outcome(model).addGlobalEvents(WebRtcEvent.Connect(model.oppoName))
@@ -65,9 +64,7 @@ object SkeletonGameScene
       else
         val playerNo = model.playerNo
         val msgToSend1 = (k.keyCode) match
-          case Key.KEY_A =>
-            println("Key A")
-            "ALPHA"
+          case Key.KEY_A => "ALPHA"
           case Key.KEY_B => "BRAVO"
           case Key.KEY_C => "CHARLIE"
           case Key.KEY_D => "DELTA"
@@ -80,7 +77,10 @@ object SkeletonGameScene
           else
             val msgToSend2 = msgToSend1.toLowerCase()
             Outcome(model).addGlobalEvents(WebRtcEvent.SendGameData(msgToSend2))
-        else Outcome(model)
+          end if
+        else 
+          Outcome(model)
+        end if
 
     case _ =>
       // For the moment we don't need a timer mechansim

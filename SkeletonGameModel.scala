@@ -16,10 +16,10 @@ final case class SkeletonGameModel(
 ) derives Encoder.AsObject,
       Decoder
 object SkeletonGameModel:
-  // scribe.debug("@@@ Object SkeletonGameModel Start")
+  scribe.debug("@@@ Object SkeletonGameModel Start")
 
   def creation(name1: String, name2: String): SkeletonGameModel =
-    // scribe.debug("@@@ SkeletonGameModel creation")
+    scribe.debug("@@@ SkeletonGameModel creation")
 
     val pNo =
       if (name1.compareTo(name2) > 0) then 2
@@ -36,6 +36,6 @@ object SkeletonGameModel:
       "---"
     )
   end creation
-  // scribe.debug("@@@ Object SkeletonGameModel Finish")
+  scribe.debug("@@@ Object SkeletonGameModel Finish")
 
 end SkeletonGameModel
