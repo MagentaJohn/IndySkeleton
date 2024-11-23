@@ -25,7 +25,7 @@ object SkeletonGameModel:
       if (name1.compareTo(name2) > 0) then 2
       else 1
       end if
-    scribe.debug("@@@ Name1:" + name1 + " Name2:" + name2 + "PlayerNo:" + pNo)
+    scribe.debug("@@@ Name1:" + name1 + " Name2:" + name2 + " PlayerNo:" + pNo)
 
     SkeletonGameModel(
       name1,
