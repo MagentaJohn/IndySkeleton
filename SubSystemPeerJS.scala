@@ -37,8 +37,6 @@ INITIATOR                                                            | RESPONDER
                                                                      | @@@-42 IncomingPeerConnection.on closed
 */
 
-// format: on
-
 import scala.scalajs.js
 import indigo.*
 import scribe.*
@@ -59,6 +57,8 @@ object WebRtcEvent:
   case class Close() extends WebRtcEvent with NetworkReceiveEvent // 90
 
 end WebRtcEvent
+
+// format: on
 
 final case class SSGame(initialMessage: String)
     extends SubSystem[SkeletonGameModel]:
@@ -88,14 +88,6 @@ final case class SSGame(initialMessage: String)
     Outcome(())
   end initialModel
 
-  def TT() : String =
-    val timerDivisor = 1  // makes this timer operate in 1000ths of a second ... 0 means disabled, +20 = 2 seconds
-    val ttLong = ((System.currentTimeMillis() / timerDivisor))% 100000
-    val ttInt = ttLong.toInt
-    val ttString = ttInt.toString() + " "
-    ttString
-
-
   def update(
       context: SubSystemFrameContext[ReferenceData],
       message: Unit
@@ -103,20 +95,20 @@ final case class SSGame(initialMessage: String)
 
 
     case WebRtcEvent.MakePeerEntity =>
-      scribe.debug(TT() + "@@@-10 SubSystemPeerJS WebRtcEvent.MakePeerEntity using " + context.reference.ourName)
+      scribe.debug("@@@-10 SubSystemPeerJS WebRtcEvent.MakePeerEntity using " + context.reference.ourName)
       val localPeer = Peer(id = context.reference.ourName)
 
       localPeer.on(
         "open",
         (_: Any) => 
-          scribe.debug(TT() + "@@@-11 localPeer.on open")
+          scribe.debug("@@@-11 localPeer.on open")
           latestDisplayInfo = Some(SkeletonUpdate.Info("Peer:Open", "", ""))
       )
 
       localPeer.on(
         "connection",
         (c: DataConnection) =>
-          scribe.debug(TT() + "@@@-12 localPeer.connection to "  + c.label)
+          scribe.debug("@@@-12 localPeer.connection to "  + c.label)
 
           // optionally, we can reject connection if c.label != context.reference.oppoName ...
           // ... this is the scenario where an unknown peer has connected to us
@@ -128,37 +120,36 @@ final case class SSGame(initialMessage: String)
       localPeer.on(
         "disconnected",
         (_: Any) =>
-          scribe.debug(TT() + "@@@-13 localPeer.on disconnected")
+          scribe.debug("@@@-13 localPeer.on disconnected")
           latestDisplayInfo = Some(SkeletonUpdate.Info("Peer:Disconnected", "", ""))
       )
 
       localPeer.on(
         "close",
         (_: Any) =>
-          scribe.debug(TT() + "@@@-14 localPeer.on close")
+          scribe.debug("@@@-14 localPeer.on close")
           latestDisplayInfo = Some(SkeletonUpdate.Info("Peer:Close", "", ""))
       )
 
       localPeer.on(
         "error",
         (e: js.Object) =>
-          scribe.error(TT() + "@@@-19 LocalPeer.on error " + js.JSON.stringify(e))
+          scribe.error("@@@-19 LocalPeer.on error " + js.JSON.stringify(e))
           latestDisplayInfo = Some(SkeletonUpdate.Info("Peer:Error", "", ""))
 
       )
       eventQueue.enqueue(WebRtcEvent.CreatedPeerEntity(localPeer))
       Outcome(())
-      //Outcome(()).addGlobalEvents(WebRtcEvent.CreatedPeerEntity(localPeer))
 
     case WebRtcEvent.CreatedPeerEntity(p) =>
-      scribe.debug(TT() + "@@@-20 SubSystemPeerJS WebRtcEvent.CreatedPeerEntity")
+      scribe.debug("@@@-20 SubSystemPeerJS WebRtcEvent.CreatedPeerEntity")
       peer = Some(p)
       latestDisplayInfo = Some(SkeletonUpdate.Info("Peer:Created", "", ""))
       Outcome(())
 
     case WebRtcEvent.Connect(s) =>
       val ourname = peer.get.id
-      scribe.debug(TT() + "@@@-30 SubSystemPeerJS WebRtcEvent.Connect: " + s + " ->  " + ourname)
+      scribe.debug("@@@-30 SubSystemPeerJS WebRtcEvent.Connect: " + s + " ->  " + ourname)
 
       val connection = peer match
         case Some(p) =>
@@ -168,41 +159,40 @@ final case class SSGame(initialMessage: String)
           conn.on(
             "open",
             (_: Any) =>
-              scribe.debug(TT() + "@@@-31 Connect.on open")
+              scribe.debug("@@@-31 Connect.on open")
               eventQueue.enqueue(WebRtcEvent.ConnectionOpen)
               latestDisplayInfo = Some(SkeletonUpdate.Info("Connect Open", "", ""))
           )
           conn.on(
             "close",
             (c: DataConnection) =>
-              scribe.debug(TT() + "@@@-32 Connect.on close")
+              scribe.debug("@@@-32 Connect.on close")
               latestDisplayInfo = Some(SkeletonUpdate.Info("Connect Close", "", ""))
           )
           conn.on(
             "error",
             (e: js.Object) =>
-              scribe.error(TT() + "@@@-33 Connect.on error" + js.JSON.stringify(e))
+              scribe.error("@@@-33 Connect.on error" + js.JSON.stringify(e))
               latestDisplayInfo = Some(SkeletonUpdate.Info("Connect Error", "", ""))
           )
 
           conn
 
         case None =>
-          scribe.fatal(TT() + "@@@-39 Connect None ... Attempting to connect without a peer")
+          scribe.fatal("@@@-39 Connect None ... Attempting to connect without a peer")
           latestDisplayInfo = Some(SkeletonUpdate.Info("Connect Error no peer", "", ""))
           val nullDataConnection = new DataConnection()
           nullDataConnection // likely to cause exception        
 
         eventQueue.enqueue(WebRtcEvent.PeerCreatedConnection(connection))
         Outcome(())
-        //Outcome(()).addGlobalEvents(WebRtcEvent.PeerCreatedConnection(connection))
 
     case WebRtcEvent.IncomingPeerConnection(c) =>
-      scribe.debug(TT() + "@@@-40 SubSystemPeerJS WebRtcEvent.IncomingPeerConnection")
+      scribe.debug("@@@-40 SubSystemPeerJS WebRtcEvent.IncomingPeerConnection")
       c.on(
         "data",
         (data: String) =>
-          scribe.debug(TT() + "@@@-41 IncomingPeerConnection.on data " + data)
+          scribe.debug("@@@-41 IncomingPeerConnection.on data " + data)
           eventQueue.enqueue(WebRtcEvent.ReceivedData(data))
           latestDisplayInfo = Some(SkeletonUpdate.Info("", "", data))
           )
@@ -210,32 +200,31 @@ final case class SSGame(initialMessage: String)
       c.on(
         "close",
         (c: DataConnection) =>
-          scribe.debug(TT() + "@@@-42 IncomingPeerConnection.on closed ")
+          scribe.debug("@@@-42 IncomingPeerConnection.on closed ")
           latestDisplayInfo = Some(SkeletonUpdate.Info("IncomingConnection:Closed", "", ""))
       )
       c.on(
         "error",
         (e: js.Object) =>
-          scribe.error(TT() + "@@@-49 IncomingPeerConnection.on error " + js.JSON.stringify(e))
+          scribe.error("@@@-49 IncomingPeerConnection.on error " + js.JSON.stringify(e))
           latestDisplayInfo = Some(SkeletonUpdate.Info("IncomingConnection:Error", "", ""))
       )
       eventQueue.enqueue(WebRtcEvent.PeerCreatedConnection(c))
       Outcome(())
-      //Outcome(()).addGlobalEvents(WebRtcEvent.PeerCreatedConnection(c))
 
     case WebRtcEvent.PeerCreatedConnection(connLocal: DataConnection) =>
-      scribe.debug(TT() + "@@@-50 SubSystemPeerJS WebRtcEvent.PeerCreatedConnection")
+      scribe.debug("@@@-50 SubSystemPeerJS WebRtcEvent.PeerCreatedConnection")
       conn = Some(connLocal)
       latestDisplayInfo = Some(SkeletonUpdate.Info("Connection:Created", "", ""))
       Outcome(())
 
     case WebRtcEvent.ConnectionOpen =>
-      scribe.debug(TT() + "@@@-60 SubSystemPeerJS WebRtcEvent.ConnectionOpen")
+      scribe.debug("@@@-60 SubSystemPeerJS WebRtcEvent.ConnectionOpen")
       conn.foreach { c =>
         c.on(
           "data",
           (data: String) =>
-            scribe.debug(TT() + "@@@-61 ConnectionOpen.on data " + data)
+            scribe.debug("@@@-61 ConnectionOpen.on data " + data)
             eventQueue.enqueue(WebRtcEvent.ReceivedData(data))
             latestDisplayInfo = Some(SkeletonUpdate.Info("", "", data))            
         )
@@ -243,37 +232,37 @@ final case class SSGame(initialMessage: String)
         c.on(
           "close",
           (c: DataConnection) =>
-            scribe.debug(TT() + "@@@-62 ConnectionOpen.on close ")
+            scribe.debug("@@@-62 ConnectionOpen.on close ")
             latestDisplayInfo = Some(SkeletonUpdate.Info("Connection Closed", "", ""))
         )
         c.on(
           "error",
           (e: js.Object) =>
-            scribe.error(TT() + "@@@-69 ConnectionOpen.on error " + js.JSON.stringify(e))
+            scribe.error("@@@-69 ConnectionOpen.on error " + js.JSON.stringify(e))
             latestDisplayInfo = Some(SkeletonUpdate.Info("Connection Error", "", ""))
         )
       }
       Outcome(())
 
     case WebRtcEvent.SendData(s) =>
-      scribe.debug(TT() + "@@@-70 SubSystemPeerJS WebRtcEvent.SendData")
+      scribe.debug("@@@-70 SubSystemPeerJS WebRtcEvent.SendData")
       conn.foreach { c =>
-        scribe.debug(TT() + "@@@-71 SendData " + s)
+        scribe.debug("@@@-71 SendData " + s)
         c.send(s)
         latestDisplayInfo = Some(SkeletonUpdate.Info("", s, ""))   
       }
       Outcome(())
 
     case WebRtcEvent.ReceivedData(s) =>
-      scribe.debug(TT() + "@@@-80 SubSystemPeerJS WebRtcEvent.ReceiveData")
+      scribe.debug("@@@-80 SubSystemPeerJS WebRtcEvent.ReceiveData")
       conn.foreach { c =>
-        scribe.debug(TT() + "@@@-81 ReceiveData " + s)
+        scribe.debug("@@@-81 ReceiveData " + s)
         latestDisplayInfo = Some(SkeletonUpdate.Info("", "", s)) 
       }  
       Outcome(())
 
     case WebRtcEvent.Close() =>
-      scribe.debug(TT() + "@@@-90 SubSystemPeerJS WebRtcEvent.Close")
+      scribe.debug("@@@-90 SubSystemPeerJS WebRtcEvent.Close")
       conn.foreach(_.close())
       latestDisplayInfo = Some(SkeletonUpdate.Info("Close", "", ""))   
       Outcome(())
