@@ -15,6 +15,7 @@ import indigo.shared.events.NetworkSendEvent
 import scala.collection.mutable.Queue
 import cats.instances.queue
 
+
 sealed trait WebRtcEvent extends GlobalEvent
 object WebRtcEvent:
   case object MakePeerEntity extends WebRtcEvent // 10
@@ -76,7 +77,11 @@ final case class SSGame(initialMessage: String)
       localPeer.on(
         "connection",
         (c: DataConnection) =>
-          scribe.debug("@@@-12 localPeer.connection")
+          scribe.debug("@@@-12 localPeer.connection to "  + c.label)
+
+          // optionally, we can reject connection if c.label != context.reference.oppoName ...
+          // ... this is the scenario where an unknown peer has connected to us
+
           eventQueue.enqueue(WebRtcEvent.IncomingPeerConnection(c))
           latestDisplayInfo = Some(SkeletonUpdate.Info("Peer:Connection", "", ""))
 
@@ -116,8 +121,9 @@ final case class SSGame(initialMessage: String)
 
       val connection = peer match
         case Some(p) =>
-          val conn = p.connect(s)
-
+          val options = js.Dynamic.literal()
+          options.label = ourname
+          val conn = p.connect(s, options)
           conn.on(
             "open",
             (_: Any) =>
