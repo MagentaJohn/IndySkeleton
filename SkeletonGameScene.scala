@@ -4,8 +4,7 @@ import indigo.*
 import indigo.scenes.*
 import org.w3c.dom.css.RGBColor
 
-object SkeletonGameScene
-    extends Scene[StartUpData, SkeletonGameModel, ViewModel]:
+object SkeletonGameScene extends Scene[StartUpData, SkeletonGameModel, ViewModel]:
 
   type SceneModel = SkeletonGameModel
   type SceneViewModel = ViewModel
@@ -44,7 +43,6 @@ object SkeletonGameScene
       model: SceneModel
   ): GlobalEvent => Outcome[SceneModel] = {
 
-
     case e: SkeletonUpdate.Info =>
       val newStatus = if (e.st.isEmpty()) then model.status else e.st
       val newTx = if (e.tx.isEmpty()) then model.tx else e.tx
@@ -52,12 +50,9 @@ object SkeletonGameScene
       Outcome(model.copy(status = newStatus, tx = newTx, rx = newRx))
 
     case k: KeyboardEvent.KeyDown =>
-      if k.keyCode == Key.KEY_P then
-        Outcome(model).addGlobalEvents(WebRtcEvent.MakePeerEntity)
-      else if k.keyCode == Key.ENTER then
-        Outcome(model).addGlobalEvents(WebRtcEvent.Connect(model.oppoName))
-      else if k.keyCode == Key.ESCAPE then
-        Outcome(model).addGlobalEvents(WebRtcEvent.Close())
+      if k.keyCode == Key.KEY_P then Outcome(model).addGlobalEvents(WebRtcEvent.MakePeerEntity)
+      else if k.keyCode == Key.ENTER then Outcome(model).addGlobalEvents(WebRtcEvent.Connect(model.oppoName))
+      else if k.keyCode == Key.ESCAPE then Outcome(model).addGlobalEvents(WebRtcEvent.Close())
       else
         val playerNo = model.playerNo
         val msgToSend1 = (k.keyCode) match
@@ -70,12 +65,14 @@ object SkeletonGameScene
           case _         => ""
         if (msgToSend1.isEmpty() == false) then
           if (playerNo == 1) then
+            // send to subsystem handling WebRtcevents
             Outcome(model).addGlobalEvents(WebRtcEvent.SendData(msgToSend1))
           else
             val msgToSend2 = msgToSend1.toLowerCase()
             Outcome(model).addGlobalEvents(WebRtcEvent.SendData(msgToSend2))
           end if
-        else 
+        else
+          // ignoring "" indicating unmatched keys
           Outcome(model)
         end if
 
@@ -85,7 +82,6 @@ object SkeletonGameScene
       //  timerT1 = (System.currentTimeMillis() / timerDivisor) + 20
       //  scribe.info("@@@ Timer T1")
       // end if
-      // scribe.info("no keypress")
       Outcome(model)
   }
 //    _ => Outcome(model)
@@ -111,68 +107,26 @@ object SkeletonGameScene
     val playerGuideD =
       if (model.playerNo == 1) then playerGuideD1 else playerGuideD2
 
-    val label0A = TextBox(model.ourName, 300, 80)
-      .withColor(myColor)
-      .withFontSize(Pixels(40))
-      .moveTo(10, 10)
-    val label0B = TextBox("vs", 300, 80)
-      .withColor(myColor)
-      .withFontSize(Pixels(40))
-      .moveTo(50, 50)
-    val label0C = TextBox(model.oppoName, 300, 80)
-      .withColor(oppoColor)
-      .withFontSize(Pixels(40))
-      .moveTo(10, 90)
-    val textP1 = TextBox(playerGuideA, 400, 40)
-      .withColor(myColor)
-      .withFontSize(Pixels(20))
-      .moveTo(320, 10)
-    val textP2 = TextBox(playerGuideB, 400, 40)
-      .withColor(myColor)
-      .withFontSize(Pixels(20))
-      .moveTo(320, 40)
-    val textP3 = TextBox(playerGuideC, 400, 40)
-      .withColor(myColor)
-      .withFontSize(Pixels(20))
-      .moveTo(320, 70)
-    val textP4 = TextBox(playerGuideD, 800, 40)
-      .withColor(myColor)
-      .withFontSize(Pixels(20))
-      .moveTo(320, 100)
-    val textP5 = TextBox(playerGuideE, 400, 40)
-      .withColor(myColor)
-      .withFontSize(Pixels(20))
-      .moveTo(320, 130)
+    val label0A = TextBox(model.ourName, 300, 80).withColor(myColor).withFontSize(Pixels(40)).moveTo(10, 10)
+    val label0B = TextBox("vs", 300, 80).withColor(myColor).withFontSize(Pixels(40)).moveTo(50, 50)
+    val label0C = TextBox(model.oppoName, 300, 80).withColor(oppoColor).withFontSize(Pixels(40)).moveTo(10, 90)
+    val textP1 = TextBox(playerGuideA, 400, 40).withColor(myColor).withFontSize(Pixels(20)).moveTo(320, 10)
+    val textP2 = TextBox(playerGuideB, 400, 40).withColor(myColor).withFontSize(Pixels(20)).moveTo(320, 40)
+    val textP3 = TextBox(playerGuideC, 400, 40).withColor(myColor).withFontSize(Pixels(20)).moveTo(320, 70)
+    val textP4 = TextBox(playerGuideD, 800, 40).withColor(myColor).withFontSize(Pixels(20)).moveTo(320, 100)
+    val textP5 = TextBox(playerGuideE, 400, 40).withColor(myColor).withFontSize(Pixels(20)).moveTo(320, 130)
 
-    val label1 = TextBox("Status:", 100, 40)
-      .withColor(myColor)
-      .withFontSize(Pixels(20))
-      .moveTo(10, 180)
+    val label1 = TextBox("Status:", 100, 40).withColor(myColor).withFontSize(Pixels(20)).moveTo(10, 180)
     val box1 = Rectangle(Point(5, 210), Size(300, 50))
-    val text1 = TextBox(model.status, 300, 40)
-      .withColor(RGBA.Black)
-      .withFontSize(Pixels(20))
-      .moveTo(10, 220)
+    val text1 = TextBox(model.status, 300, 40).withColor(RGBA.Black).withFontSize(Pixels(20)).moveTo(10, 220)
 
-    val label2 = TextBox("TX:", 100, 40)
-      .withColor(myColor)
-      .withFontSize(Pixels(20))
-      .moveTo(10, 290)
+    val label2 = TextBox("TX:", 100, 40).withColor(myColor).withFontSize(Pixels(20)).moveTo(10, 290)
     val box2 = Rectangle(Point(5, 320), Size(300, 50))
-    val text2 = TextBox(model.tx, 300, 40)
-      .withColor(RGBA.Black)
-      .withFontSize(Pixels(20))
-      .moveTo(10, 330)
+    val text2 = TextBox(model.tx, 300, 40).withColor(RGBA.Black).withFontSize(Pixels(20)).moveTo(10, 330)
 
-    val label3 = TextBox("RX:", 100, 40)
-      .withColor(myColor)
-      .withFontSize(Pixels(20))
-      .moveTo(10, 400)
+    val label3 = TextBox("RX:", 100, 40).withColor(myColor).withFontSize(Pixels(20)).moveTo(10, 400)
     val box3 = Rectangle(Point(5, 430), Size(300, 50))
-    val text3 = TextBox(model.rx, 300, 40)
-      .withColor(RGBA.Black)
-      .withFontSize(Pixels(20))
-      .moveTo(10, 440)
+    val text3 = TextBox(model.rx, 300, 40).withColor(RGBA.Black).withFontSize(Pixels(20)).moveTo(10, 440)
 
     val spinner = Shape
       .Box(

@@ -19,7 +19,7 @@ case class SkeletonGame(
   Logger.root
     .clearHandlers()
     .withHandler(formatter = Formatter.simple)
-    .withMinimumLevel(Level.Debug)  // levels: fatal,error,warn,info,debug,trace
+    .withMinimumLevel(Level.Debug) // levels: fatal,error,warn,info,debug,trace
     .replace()
 
   def initialScene(bootData: BootData): Option[SceneName] =
@@ -34,15 +34,15 @@ case class SkeletonGame(
   def boot(flags: Map[String, String]): Outcome[BootResult[BootData, SkeletonGameModel]] =
     val width = flags("width").toInt
     val height = flags("height").toInt
-    val name1:String  = flags("name1")
-    val name2:String  = flags("name2")
+    val name1: String = flags("name1")
+    val name2: String = flags("name2")
 
     Outcome {
 
-      val skeletonBootData: BootData = 
+      val skeletonBootData: BootData =
         BootData.create(width, height, name1, name2)
 
-      val config:GameConfig = 
+      val config: GameConfig =
         GameConfig.default.withViewport(skeletonBootData.gameViewPort)
 
       BootResult(config, skeletonBootData)
@@ -90,7 +90,7 @@ case class SkeletonGame(
   ): Outcome[SceneUpdateFragment] =
     Outcome(SceneUpdateFragment.empty)
 
-final case class BootData(pixelWidth: Int, pixelHeight: Int, firstName: String, secondName: String, viewPort: GameViewport) : 
+final case class BootData(pixelWidth: Int, pixelHeight: Int, firstName: String, secondName: String, viewPort: GameViewport):
   val width = pixelWidth
   val height = pixelHeight
   val name1 = firstName
@@ -99,10 +99,9 @@ final case class BootData(pixelWidth: Int, pixelHeight: Int, firstName: String, 
 end BootData
 
 object BootData:
-  def create(w:Int, h:Int, n1:String, n2:String ): BootData = 
-    BootData(w, h, n1, n2, GameViewport(w,h))
+  def create(w: Int, h: Int, n1: String, n2: String): BootData =
+    BootData(w, h, n1, n2, GameViewport(w, h))
 end BootData
-
 
 final case class StartUpData(skBootData: BootData, staticAssets: StaticAssets):
   val bootData = skBootData
@@ -110,9 +109,8 @@ final case class StartUpData(skBootData: BootData, staticAssets: StaticAssets):
 
 object StartUpData:
 
-  def initialise(bootData: BootData): Outcome[Startup[StartUpData]] = 
+  def initialise(bootData: BootData): Outcome[Startup[StartUpData]] =
     Outcome(Startup.Success(createStartUpData(bootData)))
-
 
   def createStartUpData(skBootData: BootData): StartUpData =
     StartUpData(
