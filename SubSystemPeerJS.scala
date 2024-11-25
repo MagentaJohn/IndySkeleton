@@ -14,7 +14,7 @@ INITIATOR                                                            | RESPONDER
 @@@-10 SubSystemPeerJS WebRtcEvent.MakePeerEntity using FIRSTNAME    | @@@-10 SubSystemPeerJS WebRtcEvent.MakePeerEntity using SECONDNAME
 @@@-20 SubSystemPeerJS WebRtcEvent.CreatedPeerEntity                 | @@@-20 SubSystemPeerJS WebRtcEvent.CreatedPeerEntity
 @@@-11 localPeer.on open                                             | @@@-11 localPeer.on open
-@@@-30 SubSystemPeerJS WebRtcEvent.Connect: SECONDNAME ->  FIRSTNAME |
+@@@-30 SubSystemPeerJS WebRtcEvent.Connect: FIRSTNAME -> SECONDNAME  |
 @@@-50 SubSystemPeerJS WebRtcEvent.PeerCreatedConnection             |
                                                                      | @@@-12 localPeer.connection to FIRSTNAME
                                                                      | @@@-40 SubSystemPeerJS WebRtcEvent.IncomingPeerConnection
@@ -145,7 +145,7 @@ final case class SSGame(initialMessage: String) extends SubSystem[SkeletonGameMo
 
     case WebRtcEvent.Connect(s) =>
       val ourname = peer.get.id
-      scribe.debug("@@@-30 SubSystemPeerJS WebRtcEvent.Connect: " + s + " ->  " + ourname)
+      scribe.debug("@@@-30 SubSystemPeerJS WebRtcEvent.Connect: " + ourname + " ->  " + s)
 
       val connection = peer match
         case Some(p) =>
